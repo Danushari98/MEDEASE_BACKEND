@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,13 +20,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-k77t1t5-f*zdwiqw)-b2$#htqdogtq=4i*udkruo2_zt-ew0dp'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+SECRET_KEY = os.environ.get( 
+"DJANGO_SECRET_KEY", 
+"django-insecure-y#lv@ls255+cyx$f6d%@2yxp^y_egg)6_*mt!#@y4fphy+)rl2" 
+) 
+DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True" 
+ALLOWED_HOSTS = os.environ.get( 
+"DJANGO_ALLOWED_HOSTS", 
+"localhost,127.0.0.1," 
+).split(",")
 
 
 # Application definition
@@ -51,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
 ]
 
 ROOT_URLCONF = 'hospital_backend.urls'
@@ -104,7 +108,22 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [ 
+"https://medeasefrontend.netlify.app/",  # your deployed frontend 
+"http://localhost:3000",                      
+] 
+
+CORS_ALLOW_ALL_ORIGINS = False 
+CORS_ALLOW_CREDENTIALS = True 
+
+CORS_ALLOW_HEADERS = [ 
+'content-type', 
+'authorization', 
+'x-csrftoken', 
+'x-requested-with', 
+]
 
 
 # Internationalization
@@ -128,3 +147,13 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# -------------------- 
+# REST Framework Settings (Optional) 
+# -------------------- 
+REST_FRAMEWORK = { 
+'DEFAULT_PERMISSION_CLASSES': [ 
+'rest_framework.permissions.AllowAny', 
+] 
+} 
